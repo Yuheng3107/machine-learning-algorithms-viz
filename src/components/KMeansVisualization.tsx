@@ -102,15 +102,17 @@ export default function KMeansVisualization() {
   };
 
   return (
-    <div style={{ width: "100vh", height: "100vh" }}>
-      <ScatterPlot
-        centroid1={centroid1}
-        centroid2={centroid2}
-        points1={points1}
-        points2={points2}
-        noisyPoints={noisyPoints}
-      ></ScatterPlot>
-      <button onClick={kMeansClustering}>Start K Means Clustering</button>
+    <div className="flex justify-center">
+      <div className="h-[80vh] lg:w-3/5 w-screen flex-col justify-center items-center">
+        <ScatterPlot
+          centroid1={centroid1}
+          centroid2={centroid2}
+          points1={points1}
+          points2={points2}
+          noisyPoints={noisyPoints}
+        ></ScatterPlot>
+        <button onClick={kMeansClustering}>Start K Means Clustering</button>
+      </div>
     </div>
   );
 }
