@@ -9,7 +9,7 @@ import {
   Cross,
 } from "recharts";
 
-interface Point {
+export interface Point {
   x: number;
   y: number;
 }
@@ -26,15 +26,24 @@ export default function ScatterPlot({
   points1,
   points2,
 }: ScatterPlotProps) {
-  <ResponsiveContainer width="100%" height="100%">
-    <ScatterChart>
-      <CartesianGrid />
-      <XAxis />
-      <YAxis />
-      <Scatter name="Points 1" data={points1} fill="#dc2626" />
-      <Scatter name="Points 2" data={points2} fill="#0284c7" />
-      <ReferenceDot {...centroid1} fill="#dc2626" shape={<Cross />} />
-      <ReferenceDot {...centroid2} fill="#0284c7" shape={<Cross />} />
-    </ScatterChart>
-  </ResponsiveContainer>;
+  return (
+    <ResponsiveContainer width="100%" height={400}>
+      <ScatterChart
+        margin={{
+          top: 20,
+          right: 20,
+          bottom: 20,
+          left: 20,
+        }}
+      >
+        <CartesianGrid />
+        <XAxis type="number" dataKey="x" />
+        <YAxis type="number" dataKey="y" />
+        <Scatter name="Points 1" data={points1} fill="#dc2626" />
+        <Scatter name="Points 2" data={points2} fill="#0284c7" />
+        <ReferenceDot {...centroid1} fill="#dc2626" shape={<Cross />} />
+        <ReferenceDot {...centroid2} fill="#0284c7" shape={<Cross />} />
+      </ScatterChart>
+    </ResponsiveContainer>
+  );
 }
