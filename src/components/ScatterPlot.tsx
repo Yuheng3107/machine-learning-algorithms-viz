@@ -5,8 +5,7 @@ import {
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
-  ReferenceDot,
-  Cross,
+  Legend,
 } from "recharts";
 
 export interface Point {
@@ -19,31 +18,63 @@ interface ScatterPlotProps {
   centroid2: Point;
   points1: Point[];
   points2: Point[];
+  noisyPoints: Point[];
 }
+
 export default function ScatterPlot({
   centroid1,
   centroid2,
   points1,
   points2,
+  noisyPoints,
 }: ScatterPlotProps) {
   return (
-    <ResponsiveContainer width="100%" height={400}>
-      <ScatterChart
-        margin={{
-          top: 20,
-          right: 20,
-          bottom: 20,
-          left: 20,
-        }}
-      >
-        <CartesianGrid />
-        <XAxis type="number" dataKey="x" />
-        <YAxis type="number" dataKey="y" />
-        <Scatter name="Points 1" data={points1} fill="#dc2626" />
-        <Scatter name="Points 2" data={points2} fill="#0284c7" />
-        <ReferenceDot {...centroid1} fill="#dc2626" shape={<Cross />} />
-        <ReferenceDot {...centroid2} fill="#0284c7" shape={<Cross />} />
-      </ScatterChart>
-    </ResponsiveContainer>
+    <>
+      <ResponsiveContainer width="100%" height="70%">
+        <ScatterChart
+          margin={{
+            top: 20,
+            right: 20,
+            bottom: 20,
+            left: 20,
+          }}
+        >
+          <CartesianGrid />
+          <XAxis type="number" dataKey="x" domain={[0, 4]} />
+          <YAxis type="number" dataKey="y" domain={[0, 4]} />
+          <Legend />
+          {noisyPoints.length !== 0 &&
+            points1.length == 0 &&
+            points2.length == 0 && (
+              <Scatter
+                name="Unknown Points"
+                data={noisyPoints}
+                fill="#1e40af"
+              ></Scatter>
+            )}
+          {points1.length !== 0 && (
+            <Scatter name="Points 1" data={points1} fill="#dc2626" />
+          )}
+          {points2.length !== 0 && (
+            <Scatter name="Points 2" data={points2} fill="#0284c7" />
+          )}
+
+          <Scatter
+            name="Centroid 1"
+            data={[centroid1]}
+            fill="#dc2626"
+            shape="wye"
+            legendType="wye"
+          ></Scatter>
+          <Scatter
+            name="Centroid 2"
+            data={[centroid2]}
+            fill="#0284c7"
+            shape="wye"
+            legendType="wye"
+          ></Scatter>
+        </ScatterChart>
+      </ResponsiveContainer>
+    </>
   );
 }
