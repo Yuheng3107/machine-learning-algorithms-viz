@@ -46,7 +46,7 @@ export default function ScatterPlot({
         <Legend />
         {
           <Scatter
-            name="Unknown Points"
+            name="Unknown Group"
             data={noisyPoints}
             fill="#1e40af"
             legendType={renderLegend ? "circle" : "none"}
@@ -54,7 +54,7 @@ export default function ScatterPlot({
         }
         {points1.length !== 0 && (
           <Scatter
-            name="Points 1"
+            name="Group 1"
             data={points1}
             fill="#dc2626"
             isAnimationActive={false}
@@ -62,7 +62,7 @@ export default function ScatterPlot({
         )}
         {points2.length !== 0 && (
           <Scatter
-            name="Points 2"
+            name="Group 2"
             data={points2}
             fill="#0284c7"
             isAnimationActive={false}

@@ -111,7 +111,14 @@ export default function KMeansVisualization() {
           points2={points2}
           noisyPoints={noisyPoints}
         ></ScatterPlot>
-        <button onClick={kMeansClustering}>Start K Means Clustering</button>
+        <div className="flex justify-center">
+          <button
+            onClick={kMeansClustering}
+            className="bg-[#38bdf8] p-2 rounded-md text-[#eff6ff]"
+          >
+            Start 1 Iteration of the Algorithm
+          </button>
+        </div>
       </div>
     </div>
   );
