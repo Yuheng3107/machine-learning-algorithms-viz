@@ -8,7 +8,7 @@ export default function KMeansVisualization() {
   const [noisyPoints, setNoisyPoints] = useState<Point[]>([]);
   const [centroid1, setCentroid1] = useState({ x: 1, y: 1 });
   const [centroid2, setCentroid2] = useState({ x: 3, y: 3 });
-
+  const [i, setI] = useState<number>(-1);
   useEffect(() => {
     // generate the data by adding noise to predefined centroids
     generateData(centroid1, centroid2, 20);
@@ -17,6 +17,45 @@ export default function KMeansVisualization() {
     setCentroid1({ x: Math.random(), y: Math.random() });
     setCentroid2({ x: Math.random(), y: Math.random() });
   }, []);
+
+  useEffect(() => {
+    // ideally, we want the dots to render one at a time, so we shall break up K means clustering to do it step by step
+
+    if (i == -1) return;
+    let point = noisyPoints[i];
+    if (
+      getDistanceFromCentroid(point, centroid1) <
+      getDistanceFromCentroid(point, centroid2)
+    ) {
+      // means point is closer to centroid 1, we assign it to centroid1
+      // if point in points 2, remove it
+      setPoints2(points2.filter((p) => p.x !== point.x && p.y !== point.y));
+      // make sure point is added to points1
+      setPoints1([
+        ...points1.filter((p) => p.x !== point.x && p.y !== point.y),
+        point,
+      ]);
+    } else {
+      // means point is closer to centroid 2, we assign it to centroid 2
+      // if point in points 1, remove it
+      setPoints1(points1.filter((p) => p.x !== point.x && p.y !== point.y));
+      // make sure point is added to points2
+      setPoints2([
+        ...points2.filter((p) => p.x !== point.x && p.y !== point.y),
+        point,
+      ]);
+    }
+    if (i == noisyPoints.length - 1) {
+      // we have completed iterating through all the points
+      // calculate average of the points
+      setCentroid1(calculateNewCentroid(points1));
+      setCentroid2(calculateNewCentroid(points2));
+      // reset to -1 to break out of infinite loop
+      setI(-1);
+      return;
+    }
+    setTimeout(() => setI(i + 1), 100);
+  });
 
   const getDistanceFromCentroid = (point: Point, centroid: Point) => {
     // helper function to calculate distance
@@ -32,26 +71,11 @@ export default function KMeansVisualization() {
     return { x, y };
   };
   const kMeansClustering = () => {
-    // we first assign every point to a centroid depending on which centroid is closer
-    let group1: Point[] = [];
-    let group2: Point[] = [];
-    noisyPoints.forEach((point) => {
-      if (
-        getDistanceFromCentroid(point, centroid1) <
-        getDistanceFromCentroid(point, centroid2)
-      ) {
-        // means point is closer to centroid 1, we assign it to centroid1
-        group1.push(point);
-        setPoints1(group1);
-      } else {
-        group2.push(point);
-        setPoints2(group2);
-      }
-    });
-    // calculate average of the points
-    setCentroid1(calculateNewCentroid(group1));
-    setCentroid2(calculateNewCentroid(group2));
+    // we assign every point to a centroid depending on which centroid is closer
+    // this is done in useEffect to make sure each point renders individually
+    setI(0);
   };
+
   const generateData = (centroid1: Point, centroid2: Point, n: number) => {
     // function adds noise to both centroids to generate n data points for each centroid
     let noisyPoints1 = Array.from({ length: n }, () => {

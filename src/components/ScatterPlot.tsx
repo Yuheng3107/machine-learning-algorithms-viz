@@ -28,6 +28,8 @@ export default function ScatterPlot({
   points2,
   noisyPoints,
 }: ScatterPlotProps) {
+  let renderLegend =
+    noisyPoints.length !== 0 && points1.length === 0 && points2.length === 0;
   return (
     <>
       <ResponsiveContainer width="100%" height="70%">
@@ -43,20 +45,29 @@ export default function ScatterPlot({
           <XAxis type="number" dataKey="x" domain={[0, 4]} />
           <YAxis type="number" dataKey="y" domain={[0, 4]} />
           <Legend />
-          {noisyPoints.length !== 0 &&
-            points1.length == 0 &&
-            points2.length == 0 && (
-              <Scatter
-                name="Unknown Points"
-                data={noisyPoints}
-                fill="#1e40af"
-              ></Scatter>
-            )}
+          {
+            <Scatter
+              name="Unknown Points"
+              data={noisyPoints}
+              fill="#1e40af"
+              legendType={renderLegend ? "circle" : "none"}
+            ></Scatter>
+          }
           {points1.length !== 0 && (
-            <Scatter name="Points 1" data={points1} fill="#dc2626" />
+            <Scatter
+              name="Points 1"
+              data={points1}
+              fill="#dc2626"
+              isAnimationActive={false}
+            />
           )}
           {points2.length !== 0 && (
-            <Scatter name="Points 2" data={points2} fill="#0284c7" />
+            <Scatter
+              name="Points 2"
+              data={points2}
+              fill="#0284c7"
+              isAnimationActive={false}
+            />
           )}
 
           <Scatter
