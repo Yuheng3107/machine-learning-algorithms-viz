@@ -25,11 +25,9 @@ export default function ScatterPlot({
   points,
   noisyPoints,
 }: ScatterPlotProps) {
+  // render legend only at the start of the algorithm, where we have not labelled any points
   const renderLegend =
     noisyPoints.length !== 0 && points.every((point) => point.length === 0);
-  console.log(centroids);
-  console.log(noisyPoints);
-  console.log(points[0]);
 
   return (
     <ResponsiveContainer width="100%" height="100%" className="-ms-5">
