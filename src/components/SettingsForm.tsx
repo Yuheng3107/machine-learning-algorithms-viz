@@ -10,13 +10,25 @@ const dataPointsOptions = Array.from({ length: 6 }, (_, i) => ({
   label: String(15 + i * 5),
 }));
 
+const noiseScalingFactorOptions = Array.from({ length: 6 }, (_, i) => ({
+  value: String(roundToNearestDp(0.2 + i * 0.2)),
+  label: String(roundToNearestDp(0.2 + i * 0.2)),
+}));
+
+// to fix floating point no issue
+function roundToNearestDp(num: number) {
+  return Math.round(num * 10) / 10;
+}
+
 export default function SettingsForm({
   setCentroidCount,
   setDataPointsPerCentroid,
+  setNoiseScaleFactor,
   isDisabled,
 }: {
   setCentroidCount: (value: number) => void;
   setDataPointsPerCentroid: (value: number) => void;
+  setNoiseScaleFactor: (value: number) => void;
   isDisabled: boolean;
 }) {
   return (
@@ -45,6 +57,15 @@ export default function SettingsForm({
         defaultValue={dataPointsOptions[1]}
         onChange={(selectedOption) => {
           setDataPointsPerCentroid(Number(selectedOption?.value));
+        }}
+        isDisabled={isDisabled}
+      ></Select>
+      <h2 className="p-3">Choose the scaling factor for noise added:</h2>
+      <Select
+        options={noiseScalingFactorOptions}
+        defaultValue={noiseScalingFactorOptions[2]}
+        onChange={(selectedOption) => {
+          setNoiseScaleFactor(Number(selectedOption?.value));
         }}
         isDisabled={isDisabled}
       ></Select>

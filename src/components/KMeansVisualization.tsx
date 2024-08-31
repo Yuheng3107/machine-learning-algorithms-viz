@@ -4,6 +4,13 @@ import SettingsForm from "./SettingsForm";
 import { useEffect, useState } from "react";
 import { RotatingLines } from "react-loader-spinner";
 
+// to remove dependency on centroids
+const centroidPositions = [
+  { x: 1, y: 1 },
+  { x: 3, y: 3 },
+  { x: 1, y: 3 },
+  { x: 3, y: 1 },
+];
 export default function KMeansVisualization() {
   // this stores the points corresponding to each centroid
   // points[i][j] stores the jth point of the ith centroid, starting index from 0
@@ -22,6 +29,8 @@ export default function KMeansVisualization() {
   const [count, setCount] = useState<number>(-1);
   // dataPointsPerCentroid stores how many data points we want per centroid
   const [dataPointsPerCentroid, setDataPointsPerCentroid] = useState(20);
+  // scaling factor
+  const [noiseScaleFactor, setNoiseScaleFactor] = useState(0.6);
 
   const generateCentroids = () => {
     // function to generate centroids
@@ -37,24 +46,21 @@ export default function KMeansVisualization() {
 
   // this hook is used for data generation
   useEffect(() => {
+    // when settings change we want to rerun the data generation
+
     // generate centroids depending on centroid count
     generateCentroids();
     // after centroids are generated, data will automatically update, as we add a hook for it
-
+    generateData();
     // need to set points
     const pointsArray = [];
     for (let i = 0; i < centroidCount; i++) {
       pointsArray.push([]);
     }
     setPoints(pointsArray);
-  }, [centroidCount]);
+  }, [centroidCount, dataPointsPerCentroid, noiseScaleFactor]);
 
-  // this hook is used to generate new noisy data everytime the centroids changes
-  useEffect(() => {
-    // generate the data by adding noise to predefined centroids, putting 10 data points for each centroid
-    generateData();
-  }, [centroids]);
-
+  // this hook is used for generating the centroids
   useEffect(() => {
     // after we are done generating the data (when noisyPoints changes), we start pick random values for the centroids,
     // and use k means clustering to find the centroids
@@ -118,20 +124,6 @@ export default function KMeansVisualization() {
     setTimeout(() => setCount(count + 1), 100);
   }, [count]);
 
-  // this hook is to react to the number of data points being updated
-  useEffect(() => {
-    // generate centroids depending on centroid count
-    generateCentroids();
-    // after centroids are generated, data will automatically update, as we add a hook for it
-
-    // need to set points
-    const pointsArray = [];
-    for (let i = 0; i < centroidCount; i++) {
-      pointsArray.push([]);
-    }
-    setPoints(pointsArray);
-  }, [dataPointsPerCentroid]);
-
   const getDistanceFromCentroid = (point: Point, centroid: Point) => {
     // helper function to calculate distance
     const x = point.x - centroid.x;
@@ -152,12 +144,7 @@ export default function KMeansVisualization() {
     // we set count to 0 to start the loop that will break once we have iterated through all the points
     setCount(0);
   };
-
   const generateData = () => {
-    // check whether we already have the prerequisite length
-    if (noisyPoints.length === centroidCount * dataPointsPerCentroid) return;
-    console.log(centroids);
-    console.log(centroidCount);
     // function adds noise to both centroids to generate n data points for each centroid
     let noisyPointsArray: Point[] = [];
     for (let i = 0; i < centroidCount; i++) {
@@ -169,11 +156,11 @@ export default function KMeansVisualization() {
         while (x < 0 || y < 0 || x > 4 || y > 4) {
           // noise added allows points to be +-1 from centroid
           Math.random() > 0.5
-            ? (x = centroids[i].x + Math.random())
-            : (x = centroids[i].x - Math.random());
+            ? (x = centroidPositions[i].x + Math.random() * noiseScaleFactor)
+            : (x = centroidPositions[i].x - Math.random() * noiseScaleFactor);
           Math.random() > 0.5
-            ? (y = centroids[i].y + Math.random())
-            : (y = centroids[i].y - Math.random());
+            ? (y = centroidPositions[i].y + Math.random() * noiseScaleFactor)
+            : (y = centroidPositions[i].y - Math.random() * noiseScaleFactor);
         }
 
         return { x, y };
@@ -191,6 +178,7 @@ export default function KMeansVisualization() {
             <SettingsForm
               setCentroidCount={setCentroidCount}
               setDataPointsPerCentroid={setDataPointsPerCentroid}
+              setNoiseScaleFactor={setNoiseScaleFactor}
               isDisabled={count !== -1}
             ></SettingsForm>
           </div>
@@ -226,6 +214,7 @@ export default function KMeansVisualization() {
         <SettingsForm
           setCentroidCount={setCentroidCount}
           setDataPointsPerCentroid={setDataPointsPerCentroid}
+          setNoiseScaleFactor={setNoiseScaleFactor}
           isDisabled={count !== -1}
         ></SettingsForm>
       </div>
