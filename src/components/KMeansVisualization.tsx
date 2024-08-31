@@ -3,8 +3,6 @@ import { Point } from "./ScatterPlot";
 import { useEffect, useState } from "react";
 
 export default function KMeansVisualization() {
-  const [points1, setPoints1] = useState<Point[]>([]);
-  const [points2, setPoints2] = useState<Point[]>([]);
   // this stores the points corresponding to each centroid
   // points[i][j] stores the jth point of the ith centroid, starting index from 0
   const [points, setPoints] = useState<Point[][]>([]);
@@ -16,9 +14,9 @@ export default function KMeansVisualization() {
     { x: 1, y: 1 },
     { x: 3, y: 3 },
   ]);
-  const [centroid1, setCentroid1] = useState({ x: 1, y: 1 });
-  const [centroid2, setCentroid2] = useState({ x: 3, y: 3 });
   const [centroidCount, setCentroidCount] = useState(2);
+  // this map will store the centroid corresponding to each point
+  //const [pointMap, setPointMap] = useState({});
 
   // count will store the index of the iteration, it starts from 0, -1 means iteration is not yet started
   const [count, setCount] = useState<number>(-1);
@@ -32,7 +30,6 @@ export default function KMeansVisualization() {
       { x: 1, y: 3 },
       { x: 3, y: 1 },
     ];
-
     setCentroids(positions.slice(0, centroidCount));
   };
 
@@ -40,15 +37,26 @@ export default function KMeansVisualization() {
   useEffect(() => {
     // generate centroids depending on centroid count
     generateCentroids();
-
     // generate the data by adding noise to predefined centroids, putting 10 data points for each centroid
     generateData(20);
     // after we are done generating the data, we start pick random values for the centroids,
     // and use k means clustering to find the centroids
+    const centroidArray: Point[] = [];
     for (let i = 0; i < centroidCount; i++) {
       // this sets each centroid to a random value
-      setCentroids([...centroids, { x: Math.random(), y: Math.random() }]);
+      centroidArray.push({
+        x: Math.random() * (i + 1),
+        y: Math.random() * (i + 1),
+      });
     }
+    console.log(centroidArray);
+    setCentroids(centroidArray);
+    // need to set points
+    const pointsArray = [];
+    for (let i = 0; i < centroidCount; i++) {
+      pointsArray.push([]);
+    }
+    setPoints(pointsArray);
   }, [centroidCount]);
 
   // this hook is used for rendering the assigning of points in k-means clustering
@@ -62,34 +70,38 @@ export default function KMeansVisualization() {
 
     // we want to assign each point to the nearest centroid
 
-    if (
-      getDistanceFromCentroid(point, centroid1) <
-      getDistanceFromCentroid(point, centroid2)
-    ) {
-      // means point is closer to centroid 1, we assign it to centroid1
-      // if point in points 2, remove it
-      setPoints2(points2.filter((p) => p.x !== point.x && p.y !== point.y));
-      // make sure point is added to points1
-      setPoints1([
-        ...points1.filter((p) => p.x !== point.x && p.y !== point.y),
-        point,
-      ]);
-    } else {
-      // means point is closer to centroid 2, we assign it to centroid 2
-      // if point in points 1, remove it
-      setPoints1(points1.filter((p) => p.x !== point.x && p.y !== point.y));
-      // make sure point is added to points2
-      setPoints2([
-        ...points2.filter((p) => p.x !== point.x && p.y !== point.y),
-        point,
-      ]);
+    // we find the nearest centroid first
+    let nearestCentroidIndex = -1;
+    let distance = Infinity;
+
+    for (let i = 0; i < centroidCount; i++) {
+      const centroid_distance = getDistanceFromCentroid(point, centroids[i]);
+      if (centroid_distance < distance) {
+        distance = centroid_distance;
+        nearestCentroidIndex = i;
+      }
     }
+
+    // remove the point from its previous centroid
+    // we do it naively by filtering all the points in that centroid
+    const pointsArray = [];
+    for (let i = 0; i < centroidCount; i++) {
+      pointsArray.push(
+        points[i].filter((p) => p.x != point.x && p.y != point.y)
+      );
+    }
+    // assign it to the nearest centroid
+    pointsArray[nearestCentroidIndex].push(point);
+    setPoints(pointsArray);
 
     if (count == noisyPoints.length - 1) {
       // we have completed iterating through all the points
-      // calculate average of the points
-      setCentroid1(calculateNewCentroid(points1));
-      setCentroid2(calculateNewCentroid(points2));
+      // calculate average of the points, and set them as the new centroids
+      const centroidsArray = [];
+      for (let i = 0; i < centroidCount; i++) {
+        centroidsArray.push(calculateNewCentroid(points[i]));
+      }
+      setCentroids(centroidsArray);
       // reset to -1 to break out of infinite loop
       setCount(-1);
       return;
@@ -147,10 +159,8 @@ export default function KMeansVisualization() {
     <div className="flex justify-center">
       <div className="h-[80vh] lg:w-3/5 w-screen flex-col justify-center items-center">
         <ScatterPlot
-          centroid1={centroid1}
-          centroid2={centroid2}
-          points1={points1}
-          points2={points2}
+          centroids={centroids}
+          points={points}
           noisyPoints={noisyPoints}
         ></ScatterPlot>
         <div className="flex justify-center">

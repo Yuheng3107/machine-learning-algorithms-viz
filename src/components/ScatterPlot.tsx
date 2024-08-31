@@ -14,22 +14,23 @@ export interface Point {
 }
 
 interface ScatterPlotProps {
-  centroid1: Point;
-  centroid2: Point;
-  points1: Point[];
-  points2: Point[];
+  centroids: Point[];
+  points: Point[][];
   noisyPoints: Point[];
 }
 
+const COLORS = ["#dc2626", "#0284c7", "#fc6238", "#ff5c77"];
 export default function ScatterPlot({
-  centroid1,
-  centroid2,
-  points1,
-  points2,
+  centroids,
+  points,
   noisyPoints,
 }: ScatterPlotProps) {
-  let renderLegend =
-    noisyPoints.length !== 0 && points1.length === 0 && points2.length === 0;
+  const renderLegend =
+    noisyPoints.length !== 0 && points.every((point) => point.length !== 0);
+  console.log(centroids);
+  console.log(noisyPoints);
+  console.log(points[0]);
+
   return (
     <ResponsiveContainer width="100%" height="100%" className="-ms-5">
       <ScatterChart
@@ -52,37 +53,34 @@ export default function ScatterPlot({
             legendType={renderLegend ? "circle" : "none"}
           ></Scatter>
         }
-        {points1.length !== 0 && (
-          <Scatter
-            name="Group 1"
-            data={points1}
-            fill="#dc2626"
-            isAnimationActive={false}
-          />
-        )}
-        {points2.length !== 0 && (
-          <Scatter
-            name="Group 2"
-            data={points2}
-            fill="#0284c7"
-            isAnimationActive={false}
-          />
-        )}
-
-        <Scatter
-          name="Centroid 1"
-          data={[centroid1]}
-          fill="#dc2626"
-          shape="wye"
-          legendType="wye"
-        ></Scatter>
-        <Scatter
-          name="Centroid 2"
-          data={[centroid2]}
-          fill="#0284c7"
-          shape="wye"
-          legendType="wye"
-        ></Scatter>
+        {centroids.map((centroid, i) => {
+          return (
+            <Scatter
+              key={`Centroid ${i + 1}`}
+              name={`Centroid ${i + 1}`}
+              data={[centroid]}
+              fill={COLORS[i]}
+              shape="wye"
+              legendType="wye"
+            ></Scatter>
+          );
+        })}
+        s
+        {points.map((point, i) => {
+          {
+            return (
+              point.length !== 0 && (
+                <Scatter
+                  key={`Group ${i + 1}`}
+                  name={`Group ${i + 1}`}
+                  data={point}
+                  fill={COLORS[i]}
+                  isAnimationActive={false}
+                />
+              )
+            );
+          }
+        })}
       </ScatterChart>
     </ResponsiveContainer>
   );
