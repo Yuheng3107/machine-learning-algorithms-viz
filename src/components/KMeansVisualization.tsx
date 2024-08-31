@@ -1,5 +1,6 @@
 import ScatterPlot from "./ScatterPlot";
 import { Point } from "./ScatterPlot";
+import Form from "./SettingsForm";
 import { useEffect, useState } from "react";
 
 export default function KMeansVisualization() {
@@ -13,6 +14,8 @@ export default function KMeansVisualization() {
   const [centroids, setCentroids] = useState<Point[]>([
     { x: 1, y: 1 },
     { x: 3, y: 3 },
+    { x: 1, y: 3 },
+    { x: 3, y: 1 },
   ]);
   const [centroidCount, setCentroidCount] = useState(2);
   // this map will store the centroid corresponding to each point
@@ -157,19 +160,24 @@ export default function KMeansVisualization() {
 
   return (
     <div className="flex justify-center">
-      <div className="h-[80vh] lg:w-3/5 w-screen flex-col justify-center items-center">
-        <ScatterPlot
-          centroids={centroids}
-          points={points}
-          noisyPoints={noisyPoints}
-        ></ScatterPlot>
-        <div className="flex justify-center">
-          <button
-            onClick={kMeansClustering}
-            className="bg-[#38bdf8] p-2 rounded-md text-[#eff6ff]"
-          >
-            Start 1 Iteration of the Algorithm
-          </button>
+      <div className="h-[80vh] w-screen flex-col justify-center items-center m-2 p-2">
+        <div className="h-full w-full flex">
+          <Form></Form>
+          <div className="w-screen">
+            <ScatterPlot
+              centroids={centroids}
+              points={points}
+              noisyPoints={noisyPoints}
+            ></ScatterPlot>
+            <div className="flex justify-center">
+              <button
+                onClick={kMeansClustering}
+                className="bg-[#38bdf8] p-2 rounded-md text-[#eff6ff]"
+              >
+                Start 1 Iteration of the Algorithm
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

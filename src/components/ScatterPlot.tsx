@@ -19,14 +19,14 @@ interface ScatterPlotProps {
   noisyPoints: Point[];
 }
 
-const COLORS = ["#dc2626", "#0284c7", "#fc6238", "#ff5c77"];
+const COLORS = ["#dc2626", "#0284c7", "#fc6238", "#ff5c77", "#ffd872"];
 export default function ScatterPlot({
   centroids,
   points,
   noisyPoints,
 }: ScatterPlotProps) {
   const renderLegend =
-    noisyPoints.length !== 0 && points.every((point) => point.length !== 0);
+    noisyPoints.length !== 0 && points.every((point) => point.length === 0);
   console.log(centroids);
   console.log(noisyPoints);
   console.log(points[0]);
