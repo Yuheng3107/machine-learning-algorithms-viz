@@ -2,6 +2,7 @@ import ScatterPlot from "./ScatterPlot";
 import { Point } from "./ScatterPlot";
 import SettingsForm from "./SettingsForm";
 import { useEffect, useState } from "react";
+import { RotatingLines } from "react-loader-spinner";
 
 export default function KMeansVisualization() {
   // this stores the points corresponding to each centroid
@@ -190,6 +191,7 @@ export default function KMeansVisualization() {
             <SettingsForm
               setCentroidCount={setCentroidCount}
               setDataPointsPerCentroid={setDataPointsPerCentroid}
+              isDisabled={count !== -1}
             ></SettingsForm>
           </div>
           <div className="w-screen">
@@ -199,12 +201,23 @@ export default function KMeansVisualization() {
               noisyPoints={noisyPoints}
             ></ScatterPlot>
             <div className="flex justify-center">
-              <button
-                onClick={kMeansClustering}
-                className="bg-[#38bdf8] p-2 rounded-md text-[#eff6ff]"
-              >
-                Start 1 Iteration of the Algorithm
-              </button>
+              {count === -1 ? (
+                <button
+                  onClick={kMeansClustering}
+                  className="bg-[#38bdf8] p-2 rounded-md text-[#eff6ff]"
+                >
+                  Start 1 Iteration
+                </button>
+              ) : (
+                <RotatingLines
+                  visible={true}
+                  width="24"
+                  strokeWidth="5"
+                  strokeColor="grey"
+                  animationDuration="0.75"
+                  ariaLabel="rotating-lines-loading"
+                />
+              )}
             </div>
           </div>
         </div>
@@ -213,6 +226,7 @@ export default function KMeansVisualization() {
         <SettingsForm
           setCentroidCount={setCentroidCount}
           setDataPointsPerCentroid={setDataPointsPerCentroid}
+          isDisabled={count !== -1}
         ></SettingsForm>
       </div>
     </div>

@@ -19,7 +19,7 @@ interface ScatterPlotProps {
   noisyPoints: Point[];
 }
 
-const COLORS = ["#dc2626", "#0284c7", "#fc6238", "#ff5c77", "#ffd872"];
+const COLORS = ["#dc2626", "#0284c7", "#00A86B", "#9966cc"];
 export default function ScatterPlot({
   centroids,
   points,

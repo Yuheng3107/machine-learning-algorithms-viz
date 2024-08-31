@@ -13,9 +13,11 @@ const dataPointsOptions = Array.from({ length: 6 }, (_, i) => ({
 export default function SettingsForm({
   setCentroidCount,
   setDataPointsPerCentroid,
+  isDisabled,
 }: {
   setCentroidCount: (value: number) => void;
   setDataPointsPerCentroid: (value: number) => void;
+  isDisabled: boolean;
 }) {
   return (
     <div className="w-full">
@@ -35,6 +37,7 @@ export default function SettingsForm({
         onChange={(selectedOption) => {
           setCentroidCount(Number(selectedOption?.value));
         }}
+        isDisabled={isDisabled}
       ></Select>
       <h2 className="p-3">Choose the number of data points per centroid:</h2>
       <Select
@@ -43,6 +46,7 @@ export default function SettingsForm({
         onChange={(selectedOption) => {
           setDataPointsPerCentroid(Number(selectedOption?.value));
         }}
+        isDisabled={isDisabled}
       ></Select>
     </div>
   );
