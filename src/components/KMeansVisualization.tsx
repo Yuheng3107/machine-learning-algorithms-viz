@@ -1,6 +1,6 @@
 import ScatterPlot from "./ScatterPlot";
 import { Point } from "./ScatterPlot";
-import Form from "./SettingsForm";
+import SettingsForm from "./SettingsForm";
 import { useEffect, useState } from "react";
 
 export default function KMeansVisualization() {
@@ -17,11 +17,10 @@ export default function KMeansVisualization() {
   ]);
   // centroidCount stores how many centroids we WANT
   const [centroidCount, setCentroidCount] = useState(2);
-  // this map will store the centroid corresponding to each point
-  //const [pointMap, setPointMap] = useState({});
-
   // count will store the index of the iteration, it starts from 0, -1 means iteration is not yet started
   const [count, setCount] = useState<number>(-1);
+  // dataPointsPerCentroid stores how many data points we want per centroid
+  const [dataPointsPerCentroid, setDataPointsPerCentroid] = useState(20);
 
   const generateCentroids = () => {
     // function to generate centroids
@@ -41,17 +40,6 @@ export default function KMeansVisualization() {
     generateCentroids();
     // after centroids are generated, data will automatically update, as we add a hook for it
 
-    // after we are done generating the data, we start pick random values for the centroids,
-    // and use k means clustering to find the centroids
-    const centroidArray: Point[] = [];
-    for (let i = 0; i < centroidCount; i++) {
-      // this sets each centroid to a random value
-      centroidArray.push({
-        x: Math.random() * (i + 1),
-        y: Math.random() * (i + 1),
-      });
-    }
-    setCentroids(centroidArray);
     // need to set points
     const pointsArray = [];
     for (let i = 0; i < centroidCount; i++) {
@@ -63,8 +51,22 @@ export default function KMeansVisualization() {
   // this hook is used to generate new noisy data everytime the centroids changes
   useEffect(() => {
     // generate the data by adding noise to predefined centroids, putting 10 data points for each centroid
-    generateData(20);
+    generateData();
   }, [centroids]);
+
+  useEffect(() => {
+    // after we are done generating the data (when noisyPoints changes), we start pick random values for the centroids,
+    // and use k means clustering to find the centroids
+    const centroidArray: Point[] = [];
+    for (let i = 0; i < centroidCount; i++) {
+      // this sets each centroid to a random value
+      centroidArray.push({
+        x: Math.random() * (i + 1),
+        y: Math.random() * (i + 1),
+      });
+    }
+    setCentroids(centroidArray);
+  }, [noisyPoints]);
   // this hook is used for rendering the assigning of points in k-means clustering
   useEffect(() => {
     // ideally, we want the dots to render one at a time, so we shall break up K means clustering to do it step by step
@@ -115,6 +117,20 @@ export default function KMeansVisualization() {
     setTimeout(() => setCount(count + 1), 100);
   }, [count]);
 
+  // this hook is to react to the number of data points being updated
+  useEffect(() => {
+    // generate centroids depending on centroid count
+    generateCentroids();
+    // after centroids are generated, data will automatically update, as we add a hook for it
+
+    // need to set points
+    const pointsArray = [];
+    for (let i = 0; i < centroidCount; i++) {
+      pointsArray.push([]);
+    }
+    setPoints(pointsArray);
+  }, [dataPointsPerCentroid]);
+
   const getDistanceFromCentroid = (point: Point, centroid: Point) => {
     // helper function to calculate distance
     const x = point.x - centroid.x;
@@ -136,19 +152,20 @@ export default function KMeansVisualization() {
     setCount(0);
   };
 
-  const generateData = (n: number) => {
+  const generateData = () => {
     // check whether we already have the prerequisite length
-    if (noisyPoints.length === centroidCount * n) return;
-
+    if (noisyPoints.length === centroidCount * dataPointsPerCentroid) return;
+    console.log(centroids);
+    console.log(centroidCount);
     // function adds noise to both centroids to generate n data points for each centroid
     let noisyPointsArray: Point[] = [];
     for (let i = 0; i < centroidCount; i++) {
       // iterate through each centroid, generating noisy points []
-      const noisyPoints = Array.from({ length: n }, () => {
-        let x = 0,
-          y = 0;
+      const noisyPoints = Array.from({ length: dataPointsPerCentroid }, () => {
+        let x = -1;
+        let y = -1;
         // keep rerolling so that its not 0 or 4, for a more uniform distribution
-        while (x === 0 || y === 0 || x === 4 || y === 4) {
+        while (x < 0 || y < 0 || x > 4 || y > 4) {
           // noise added allows points to be +-1 from centroid
           Math.random() > 0.5
             ? (x = centroids[i].x + Math.random())
@@ -156,10 +173,6 @@ export default function KMeansVisualization() {
           Math.random() > 0.5
             ? (y = centroids[i].y + Math.random())
             : (y = centroids[i].y - Math.random());
-
-          // check that it doesn't exceed points of (0,0) (4,4), setting it to the closer bound
-          x = Math.max(0, Math.min(x, 4));
-          y = Math.max(0, Math.min(y, 4));
         }
 
         return { x, y };
@@ -170,10 +183,15 @@ export default function KMeansVisualization() {
   };
 
   return (
-    <div className="flex justify-center">
+    <div className="flex-col justify-center">
       <div className="h-[80vh] w-screen flex-col justify-center items-center m-2 p-2">
         <div className="h-full w-full flex">
-          <Form setCentroidCount={setCentroidCount}></Form>
+          <div className="hidden md:block w-1/3">
+            <SettingsForm
+              setCentroidCount={setCentroidCount}
+              setDataPointsPerCentroid={setDataPointsPerCentroid}
+            ></SettingsForm>
+          </div>
           <div className="w-screen">
             <ScatterPlot
               centroids={centroids}
@@ -190,6 +208,12 @@ export default function KMeansVisualization() {
             </div>
           </div>
         </div>
+      </div>
+      <div className="block md:hidden w-full mt-10 p-2 px-10 mb-4">
+        <SettingsForm
+          setCentroidCount={setCentroidCount}
+          setDataPointsPerCentroid={setDataPointsPerCentroid}
+        ></SettingsForm>
       </div>
     </div>
   );
