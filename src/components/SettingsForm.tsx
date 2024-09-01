@@ -25,11 +25,13 @@ export default function SettingsForm({
   setDataPointsPerCentroid,
   setNoiseScaleFactor,
   isDisabled,
+  loss,
 }: {
   setCentroidCount: (value: number) => void;
   setDataPointsPerCentroid: (value: number) => void;
   setNoiseScaleFactor: (value: number) => void;
   isDisabled: boolean;
+  loss: string;
 }) {
   return (
     <div className="w-full">
@@ -69,6 +71,12 @@ export default function SettingsForm({
         }}
         isDisabled={isDisabled}
       ></Select>
+      {loss !== "" && (
+        <h2 className="p-3 text-xl">
+          Current loss for algorithm:{" "}
+          <span className="font-bold underline">{loss}</span>
+        </h2>
+      )}
     </div>
   );
 }

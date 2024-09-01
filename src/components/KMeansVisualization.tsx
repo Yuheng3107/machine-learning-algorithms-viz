@@ -31,6 +31,8 @@ export default function KMeansVisualization() {
   const [dataPointsPerCentroid, setDataPointsPerCentroid] = useState(20);
   // scaling factor
   const [noiseScaleFactor, setNoiseScaleFactor] = useState(0.6);
+  // this is used to measure the loss of the algorithm
+  const [loss, setLoss] = useState("");
 
   const generateCentroids = () => {
     // function to generate centroids
@@ -60,6 +62,19 @@ export default function KMeansVisualization() {
     setPoints(pointsArray);
   }, [centroidCount, dataPointsPerCentroid, noiseScaleFactor]);
 
+  function calculateLoss() {
+    // this function calculates the loss of the algorithm, it uses the distortion loss, i.e L2 loss
+    let loss = 0;
+    for (let i = 0; i < centroidCount; i++) {
+      const centroid = centroids[i];
+      for (let j = 0; j < points[i].length; j++) {
+        loss +=
+          Math.pow(points[i][j].x - centroid.x, 2) +
+          Math.pow(points[i][j].y - centroid.y, 2);
+      }
+    }
+    return loss.toFixed(3);
+  }
   // this hook is used for generating the centroids
   useEffect(() => {
     // after we are done generating the data (when noisyPoints changes), we start pick random values for the centroids,
@@ -78,8 +93,16 @@ export default function KMeansVisualization() {
   useEffect(() => {
     // ideally, we want the dots to render one at a time, so we shall break up K means clustering to do it step by step
 
-    // if count is -1, means the iteration is completed/has not started -> stable state, don't execute anything
-    if (count == -1) return;
+    if (count == -1) {
+      // check whether points have been assigned to clusters, i.e has algorithm run yet
+      const needCalculate = !points.every((p) => p.length === 0);
+      // if not all the points are 0, means we can calculate the loss
+      if (needCalculate) {
+        setLoss(calculateLoss());
+      }
+      // if count is -1, means the iteration is completed/has not started -> stable state, don't execute anything
+      return;
+    }
 
     const point = noisyPoints[count];
 
@@ -114,6 +137,15 @@ export default function KMeansVisualization() {
       // calculate average of the points, and set them as the new centroids
       const centroidsArray = [];
       for (let i = 0; i < centroidCount; i++) {
+        // consider the case where points[i] is empty, i.e it didn't get assigned any points, then assign it to random one
+        if (points[i].length == 0) {
+          centroidsArray.push({
+            x: Math.random(),
+            y: Math.random(),
+          });
+          continue;
+        }
+        // otherwise add the average of all the points as the new centroid
         centroidsArray.push(calculateNewCentroid(points[i]));
       }
       setCentroids(centroidsArray);
@@ -180,6 +212,7 @@ export default function KMeansVisualization() {
               setDataPointsPerCentroid={setDataPointsPerCentroid}
               setNoiseScaleFactor={setNoiseScaleFactor}
               isDisabled={count !== -1}
+              loss={loss}
             ></SettingsForm>
           </div>
           <div className="w-screen">
@@ -216,6 +249,7 @@ export default function KMeansVisualization() {
           setDataPointsPerCentroid={setDataPointsPerCentroid}
           setNoiseScaleFactor={setNoiseScaleFactor}
           isDisabled={count !== -1}
+          loss={loss}
         ></SettingsForm>
       </div>
     </div>
