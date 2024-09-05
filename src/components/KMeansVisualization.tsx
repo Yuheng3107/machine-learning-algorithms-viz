@@ -77,17 +77,14 @@ export default function KMeansVisualization() {
   }
   // this hook is used for generating the centroids
   useEffect(() => {
-    // after we are done generating the data (when noisyPoints changes), we start pick random values for the centroids,
-    // and use k means clustering to find the centroids
-    const centroidArray: Point[] = [];
-    for (let i = 0; i < centroidCount; i++) {
-      // this sets each centroid to a random value
-      centroidArray.push({
-        x: Math.random() * (i + 1),
-        y: Math.random() * (i + 1),
-      });
-    }
-    setCentroids(centroidArray);
+    // after we are done generating the data (when noisyPoints changes), we start to initialise the positions of the centroids
+
+    // get the values of k noisy points, we will set the centroids to these
+    const kNoisyPoints = [...noisyPoints]
+      .sort(() => 0.5 - Math.random())
+      .slice(0, centroidCount);
+
+    setCentroids(kNoisyPoints);
   }, [noisyPoints]);
   // this hook is used for rendering the assigning of points in k-means clustering
   useEffect(() => {
@@ -137,12 +134,11 @@ export default function KMeansVisualization() {
       // calculate average of the points, and set them as the new centroids
       const centroidsArray = [];
       for (let i = 0; i < centroidCount; i++) {
-        // consider the case where points[i] is empty, i.e it didn't get assigned any points, then assign it to random one
+        // consider the case where points[i] is empty, i.e it didn't get assigned any points, then assign it to random noisy point
         if (points[i].length == 0) {
-          centroidsArray.push({
-            x: Math.random(),
-            y: Math.random(),
-          });
+          centroidsArray.push(
+            noisyPoints[Math.floor(Math.random() * noisyPoints.length)]
+          );
           continue;
         }
         // otherwise add the average of all the points as the new centroid
