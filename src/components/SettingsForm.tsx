@@ -42,7 +42,7 @@ export default function SettingsForm({
         </p>
       </h2>
       <h2 className="p-3">
-        By default, 10 data points are generated per centroid.
+        By default, 20 data points are generated per centroid.
       </h2>
       <h3 className="p-3">Choose the number of centroids you want:</h3>
       <Select
