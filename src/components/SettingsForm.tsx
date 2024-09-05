@@ -26,12 +26,14 @@ export default function SettingsForm({
   setNoiseScaleFactor,
   isDisabled,
   loss,
+  setVisibility,
 }: {
   setCentroidCount: (value: number) => void;
   setDataPointsPerCentroid: (value: number) => void;
   setNoiseScaleFactor: (value: number) => void;
   isDisabled: boolean;
   loss: string;
+  setVisibility?: (value: boolean) => void;
 }) {
   return (
     <div className="w-full">
@@ -50,6 +52,7 @@ export default function SettingsForm({
         options={centroidsOptions}
         onChange={(selectedOption) => {
           setCentroidCount(Number(selectedOption?.value));
+          setVisibility?.(false);
         }}
         isDisabled={isDisabled}
       ></Select>
@@ -59,6 +62,7 @@ export default function SettingsForm({
         defaultValue={dataPointsOptions[1]}
         onChange={(selectedOption) => {
           setDataPointsPerCentroid(Number(selectedOption?.value));
+          setVisibility?.(false);
         }}
         isDisabled={isDisabled}
       ></Select>
@@ -68,6 +72,7 @@ export default function SettingsForm({
         defaultValue={noiseScalingFactorOptions[2]}
         onChange={(selectedOption) => {
           setNoiseScaleFactor(Number(selectedOption?.value));
+          setVisibility?.(false);
         }}
         isDisabled={isDisabled}
       ></Select>

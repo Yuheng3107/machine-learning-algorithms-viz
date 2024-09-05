@@ -11,7 +11,13 @@ const centroidPositions = [
   { x: 1, y: 3 },
   { x: 3, y: 1 },
 ];
-export default function KMeansVisualization() {
+export default function KMeansVisualization({
+  isVisible,
+  setVisibility,
+}: {
+  isVisible: boolean;
+  setVisibility?: (value: boolean) => void;
+}) {
   // this stores the points corresponding to each centroid
   // points[i][j] stores the jth point of the ith centroid, starting index from 0
   const [points, setPoints] = useState<Point[][]>([]);
@@ -200,54 +206,59 @@ export default function KMeansVisualization() {
 
   return (
     <div className="flex-col justify-center">
-      <div className="h-[80vh] w-screen flex-col justify-center items-center m-2 p-2">
-        <div className="h-full w-full flex">
-          <div className="hidden md:block w-1/3">
-            <SettingsForm
-              setCentroidCount={setCentroidCount}
-              setDataPointsPerCentroid={setDataPointsPerCentroid}
-              setNoiseScaleFactor={setNoiseScaleFactor}
-              isDisabled={count !== -1}
-              loss={loss}
-            ></SettingsForm>
-          </div>
-          <div className="w-screen">
-            <ScatterPlot
-              centroids={centroids}
-              points={points}
-              noisyPoints={noisyPoints}
-            ></ScatterPlot>
-            <div className="flex justify-center">
-              {count === -1 ? (
-                <button
-                  onClick={kMeansClustering}
-                  className="bg-[#38bdf8] p-2 rounded-md text-[#eff6ff]"
-                >
-                  Start 1 Iteration
-                </button>
-              ) : (
-                <RotatingLines
-                  visible={true}
-                  width="24"
-                  strokeWidth="5"
-                  strokeColor="grey"
-                  animationDuration="0.75"
-                  ariaLabel="rotating-lines-loading"
-                />
-              )}
+      {!isVisible && (
+        <div className="h-[80vh] w-screen flex-col justify-center items-center m-2 p-2">
+          <div className="h-full w-full flex">
+            <div className="hidden md:block w-1/3">
+              <SettingsForm
+                setCentroidCount={setCentroidCount}
+                setDataPointsPerCentroid={setDataPointsPerCentroid}
+                setNoiseScaleFactor={setNoiseScaleFactor}
+                isDisabled={count !== -1}
+                loss={loss}
+              ></SettingsForm>
+            </div>
+            <div className="w-screen">
+              <ScatterPlot
+                centroids={centroids}
+                points={points}
+                noisyPoints={noisyPoints}
+              ></ScatterPlot>
+              <div className="flex justify-center">
+                {count === -1 ? (
+                  <button
+                    onClick={kMeansClustering}
+                    className="bg-[#38bdf8] p-2 rounded-md text-[#eff6ff]"
+                  >
+                    Start 1 Iteration
+                  </button>
+                ) : (
+                  <RotatingLines
+                    visible={true}
+                    width="24"
+                    strokeWidth="5"
+                    strokeColor="grey"
+                    animationDuration="0.75"
+                    ariaLabel="rotating-lines-loading"
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div className="block md:hidden w-full mt-10 p-2 px-10 mb-4">
-        <SettingsForm
-          setCentroidCount={setCentroidCount}
-          setDataPointsPerCentroid={setDataPointsPerCentroid}
-          setNoiseScaleFactor={setNoiseScaleFactor}
-          isDisabled={count !== -1}
-          loss={loss}
-        ></SettingsForm>
-      </div>
+      )}
+      {isVisible && (
+        <div className="block md:hidden w-full mt-10 p-2 px-10 mb-4">
+          <SettingsForm
+            setCentroidCount={setCentroidCount}
+            setDataPointsPerCentroid={setDataPointsPerCentroid}
+            setNoiseScaleFactor={setNoiseScaleFactor}
+            isDisabled={count !== -1}
+            loss={loss}
+            setVisibility={setVisibility}
+          ></SettingsForm>
+        </div>
+      )}
     </div>
   );
 }
