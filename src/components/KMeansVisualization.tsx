@@ -216,6 +216,9 @@ export default function KMeansVisualization({
                 setNoiseScaleFactor={setNoiseScaleFactor}
                 isDisabled={count !== -1}
                 loss={loss}
+                noiseScaleFactor={noiseScaleFactor}
+                dataPointsPerCentroid={dataPointsPerCentroid}
+                centroidCount={centroidCount}
               ></SettingsForm>
             </div>
             <div className="w-screen">
@@ -256,6 +259,9 @@ export default function KMeansVisualization({
             isDisabled={count !== -1}
             loss={loss}
             setVisibility={setVisibility}
+            noiseScaleFactor={noiseScaleFactor}
+            dataPointsPerCentroid={dataPointsPerCentroid}
+            centroidCount={centroidCount}
           ></SettingsForm>
         </div>
       )}

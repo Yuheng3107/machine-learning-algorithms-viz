@@ -27,6 +27,9 @@ export default function SettingsForm({
   isDisabled,
   loss,
   setVisibility,
+  centroidCount,
+  dataPointsPerCentroid,
+  noiseScaleFactor,
 }: {
   setCentroidCount: (value: number) => void;
   setDataPointsPerCentroid: (value: number) => void;
@@ -34,6 +37,9 @@ export default function SettingsForm({
   isDisabled: boolean;
   loss: string;
   setVisibility?: (value: boolean) => void;
+  centroidCount: number;
+  dataPointsPerCentroid: number;
+  noiseScaleFactor: number;
 }) {
   return (
     <div className="w-full">
@@ -48,7 +54,9 @@ export default function SettingsForm({
       </h2>
       <h3 className="p-3">Choose the number of centroids you want:</h3>
       <Select
-        defaultValue={centroidsOptions[0]}
+        defaultValue={centroidsOptions.filter(
+          (option) => option.value === String(centroidCount)
+        )}
         options={centroidsOptions}
         onChange={(selectedOption) => {
           setCentroidCount(Number(selectedOption?.value));
@@ -59,7 +67,9 @@ export default function SettingsForm({
       <h2 className="p-3">Choose the number of data points per centroid:</h2>
       <Select
         options={dataPointsOptions}
-        defaultValue={dataPointsOptions[1]}
+        defaultValue={dataPointsOptions.filter(
+          (option) => option.value === String(dataPointsPerCentroid)
+        )}
         onChange={(selectedOption) => {
           setDataPointsPerCentroid(Number(selectedOption?.value));
           setVisibility?.(false);
@@ -69,7 +79,9 @@ export default function SettingsForm({
       <h2 className="p-3">Choose the scaling factor for noise added:</h2>
       <Select
         options={noiseScalingFactorOptions}
-        defaultValue={noiseScalingFactorOptions[2]}
+        defaultValue={noiseScalingFactorOptions.filter(
+          (option) => option.value === String(noiseScaleFactor)
+        )}
         onChange={(selectedOption) => {
           setNoiseScaleFactor(Number(selectedOption?.value));
           setVisibility?.(false);
